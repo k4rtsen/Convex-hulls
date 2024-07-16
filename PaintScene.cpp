@@ -1,8 +1,10 @@
 #include "PaintScene.h"
+#include "convexhull.h"
 
 #define forn(i, n) for (int i = 0; i < (int)(n); i++)
 
-PaintScene::PaintScene(QObject *parent) : QGraphicsScene(parent)
+PaintScene::PaintScene(QObject *parent)
+    : QGraphicsScene(parent)
 {
 
 }
@@ -15,34 +17,27 @@ PaintScene::~PaintScene()
 void PaintScene::Clear()
 {
     this->QGraphicsScene::clear();
-    m_square = 0;
-    m_points.clear();
+    m_DotsOnScene.clear();
 }
 
-void PaintScene::Unity()
+void PaintScene::MakeHull()
 {
-    // exceprion
-    if (m_points.empty() || m_points.size() < 2)
+    if (m_DotsOnScene.empty() || m_DotsOnScene.size() < 2)
     {
         return;
     }
 
-    // get a points
-    QVector<QPointF> hull = Jarvis();
+    // get a points of convex hull
+    ConvexHull hull(m_DotsOnScene);
 
     // paint it on scene
-    PaintConvexHull(hull);
+    PaintConvexHull(hull.GetHullPoints());
 
-    this->m_square = FindSquare(hull);
+    // send to main window the area of hull
+    emit getSquare(hull.GetSquare());
 }
 
-// векторное произведение
-int PaintScene::VectorMul(QPointF a, QPointF b)
-{
-    return a.x() * b.y() - b.x() * a.y();
-}
-
-void PaintScene::PaintConvexHull(QVector<QPointF> &hull)
+void PaintScene::PaintConvexHull(const QVector<QPoint> &hull)
 {
     forn(i, hull.size() - 1)
     {
@@ -59,27 +54,10 @@ void PaintScene::PaintConvexHull(QVector<QPointF> &hull)
             QPen(Qt::black));
 }
 
-qreal PaintScene::FindSquare(QVector<QPointF> &hull)
-{
-    qreal S{0};
-    if (hull.size() < 3)
-    {
-        return S;
-    }
-
-    int n { static_cast<int>(hull.size()) };
-    forn(i, n)
-    {
-        S += static_cast<qreal>(VectorMul(hull[i], hull[(i + 1) % n]));
-    }
-
-    return abs(S)/2;
-}
-
 void PaintScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     constexpr qreal SIZE {4};
-    QPointF point = event->scenePos();
+    QPoint point = event->scenePos().toPoint();
     addEllipse(point.x() - SIZE / 2,
                point.y() - SIZE / 2,
                SIZE,
@@ -87,52 +65,6 @@ void PaintScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
                QPen(Qt::black),
                QBrush(Qt::black));
 
-    m_points.append(point);
+    m_DotsOnScene.append(point);
     emit signalAddNewPoint(point);
-}
-
-QVector<QPointF> PaintScene::Jarvis()
-{
-    // find the topmost left point
-    QPointF head = m_points[0];
-    for(auto &val : m_points)
-    {
-        if (val.x() < head.x() || (val.x() == head.x() && val.y() < head.y()))
-        {
-            head = val;
-        }
-    }
-
-    QVector<QPointF> hull {head}; // result vector
-    QPointF p0 = head; // the reference point from which the rightmost point is considered
-    do{
-        QPointF rightmost;
-
-        if (p0 == m_points[0])
-        {
-            rightmost = m_points[1];
-        }
-        else
-        {
-            rightmost = m_points[0];
-        }
-
-        // find the rightmost point, relative to current p0
-        for(auto &val : m_points)
-        {
-            int vm = VectorMul( (val - p0), (rightmost - p0));
-            if (vm > 0)
-            {
-                rightmost = val;
-            }
-        }
-
-        p0 = rightmost;
-        hull.append(rightmost);
-    }
-    while(p0 != head);
-
-    hull.pop_back();
-
-    return hull;
 }

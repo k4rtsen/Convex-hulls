@@ -6,7 +6,6 @@
 #include <QTimer>
 #include <QDebug>
 #include <QVector>
-#include <cmath>
 
 class PaintScene : public QGraphicsScene
 {
@@ -16,28 +15,20 @@ public:
     explicit PaintScene(QObject *parent = 0);
     ~PaintScene();
     void Clear();
-    void Unity();
-    qreal GetSquare() const
-    {
-        return m_square;
-    }
+    void MakeHull();
 
 private:
-    QVector<QPointF> m_points;
-    qreal m_square{0};
+    QVector<QPoint> m_DotsOnScene;
 
 private:
     void mousePressEvent(QGraphicsSceneMouseEvent * event);
-    int VectorMul(QPointF a, QPointF b);
-    void PaintConvexHull(QVector<QPointF>&);
-    qreal FindSquare(QVector<QPointF>&);
+    void PaintConvexHull(const QVector<QPoint>&);
 
-    // QPoint &findMin(QVector<QPoint>&);
-    QVector<QPointF> Jarvis();
-    // QVector<QPoint> graham();
 
 signals:
-    void signalAddNewPoint(QPointF point);
+    void signalAddNewPoint(QPoint point);
+    void getSquare(qreal);
 };
+
 
 #endif // PAINTSCENE_H

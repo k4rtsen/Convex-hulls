@@ -28,13 +28,14 @@ private:
     PaintScene *m_pScene;
 
 private:
-    void resizeEvent(QResizeEvent * event);
+    void ResizeEvent(QResizeEvent * event);
 
 public slots:
-    void SlotAddNewPoint(QPointF);
+    void GetNewPoint(QPoint);
+    void GetSquare(qreal);
 
 private slots:
-    void slotTimer();
+    void SlotTimer();
     void on_pushButton_clicked();
     void on_pushButton_2_clicked();
 };

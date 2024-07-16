@@ -10,12 +10,14 @@ CONFIG += c++17
 
 SOURCES += \
     PaintScene.cpp \
+    convexhull.cpp \
     main.cpp \
     Paint.cpp
 
 HEADERS += \
     Paint.h \
-    PaintScene.h
+    PaintScene.h \
+    convexhull.h
 
 FORMS += \
     Paint.ui
