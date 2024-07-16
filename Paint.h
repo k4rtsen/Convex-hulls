@@ -6,7 +6,7 @@
 #include <QTimer>
 #include <QResizeEvent>
 
-#include <paintscene.h>
+#include <PaintScene.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -23,15 +23,15 @@ public:
     ~Paint();
 
 private:
-    Ui::Paint *ui;
-    QTimer *timer;
-    paintScene *scene;
+    Ui::Paint *m_pUI;
+    QTimer *m_pTimer;
+    PaintScene *m_pScene;
 
 private:
     void resizeEvent(QResizeEvent * event);
 
 public slots:
-    void slot_addNewPoint(QPointF);
+    void SlotAddNewPoint(QPointF);
 
 private slots:
     void slotTimer();

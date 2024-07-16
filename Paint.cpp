@@ -3,55 +3,55 @@
 
 Paint::Paint(QMainWindow *parent)
     : QMainWindow(parent)
-    , ui(new Ui::Paint)
+    , m_pUI(new Ui::Paint)
 {
-    ui->setupUi(this);
-    scene = new paintScene();
-    ui->graphicsView->setScene(scene);
-    connect(scene, &paintScene::signal_addNewPoint, this, &Paint::slot_addNewPoint);
+    m_pUI->setupUi(this);
+    m_pScene = new PaintScene();
+    m_pUI->graphicsView->setScene(m_pScene);
+    connect(m_pScene, &PaintScene::signalAddNewPoint, this, &Paint::SlotAddNewPoint);
 
-    timer = new QTimer();
-    connect(timer, &QTimer::timeout, this, &Paint::slotTimer);
-    timer->start(100);
+    m_pTimer = new QTimer();
+    connect(m_pTimer, &QTimer::timeout, this, &Paint::slotTimer);
+    m_pTimer->start(100);
 }
 
 Paint::~Paint()
 {
-    delete timer;
-    delete scene;
-    delete ui;
+    delete m_pTimer;
+    delete m_pScene;
+    delete m_pUI;
 }
 
 void Paint::slotTimer()
 {
-    timer->stop();
-    scene->setSceneRect(0,0, ui->graphicsView->width(), ui->graphicsView->height());
+    m_pTimer->stop();
+    m_pScene->setSceneRect(0,0, m_pUI->graphicsView->width(), m_pUI->graphicsView->height());
 }
 
 void Paint::resizeEvent(QResizeEvent *event)
 {
-    timer->start(100);
+    m_pTimer->start(100);
     QWidget::resizeEvent(event);
 }
 
-void Paint::slot_addNewPoint(QPointF point)
+void Paint::SlotAddNewPoint(QPointF point)
 {
     QString str = "(x: " + QString::number(point.x()) + ", y: " + QString::number(point.y()) + ")";
-    ui->textEdit->append(str);
+    m_pUI->textEdit->append(str);
 }
 
 void Paint::on_pushButton_clicked()
 {
-    scene->clear();
-    ui->l_square->setText("0");
-    ui->textEdit->clear();
+    m_pScene->clear();
+    m_pUI->l_square->setText("0");
+    m_pUI->textEdit->clear();
     update();
 }
 
 
 void Paint::on_pushButton_2_clicked()
 {
-    scene->unity();
-    ui->l_square->setText(QString::number(scene->getSquare()) + "px");
+    m_pScene->Unity();
+    m_pUI->l_square->setText(QString::number(m_pScene->GetSquare()) + "px");
     update();
 }
