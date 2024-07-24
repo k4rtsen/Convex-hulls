@@ -17,18 +17,11 @@ ostream &operator<<(ostream &os, const QPoint point)
 }
 
 ConvexHull::ConvexHull(const QVector<QPoint> &points)
-    : m_Square(0)
+    : m_Square{0}
 {
     // частный случай: если все точки лежат на одной прямой
     // m_Hull = Jarvis(points);
     m_Hull = Graham(points);
-
-    cout << "Hull : " << endl;
-    for(auto &val : m_Hull)
-    {
-        cout << val << endl;
-    }
-
     m_Square = CalculateArea(m_Hull);
 }
 
@@ -37,15 +30,21 @@ int ConvexHull::VectorMul(QPoint a, QPoint b)
     return a.x() * b.y() - b.x() * a.y();
 }
 
-QPoint ConvexHull::FindMinPoint(const QVector<QPoint> &points)
+QPoint ConvexHull::FindMinPoint(const QVector<QPoint> &points, int *minIndex)
 {
     QPoint head = points[0];
+    int count{0};
     for(auto &val : points)
     {
         if (val.x() < head.x() || (val.x() == head.x() && val.y() < head.y()))
         {
             head = val;
+            if (minIndex != nullptr)
+            {
+                *minIndex = count;
+            }
         }
+        count++;
     }
     return head;
 }
@@ -108,27 +107,36 @@ QVector<QPoint> ConvexHull::Jarvis(const QVector<QPoint> &points)
 
 QVector<QPoint> ConvexHull::Graham(QVector<QPoint> points)
 {
-    QPoint head = FindMinPoint(points);
+    int minIndex;
+    QPoint head = FindMinPoint(points, &minIndex);
 
-    // сортировка по полярному углу относительно левой точки
+    if (minIndex > 0 && minIndex < points.size())
+    {
+        swap(points[0], points[minIndex]);
+    }
+
+    // сортировка по полярному углу относительно нулевой точки
     sort(points.begin(), points.end(), [&](QPoint a, QPoint b){
-        return VectorMul((a - head), b - head) > 0;
+        return VectorMul((a - head), b - head) < 0;
     });
 
-    cout << "Sorted vector : " << endl;
     printVector(points);
 
-    cout << "Vector mul : " << endl;
     QVector<QPoint> hull;
     for(auto &val : points)
     {
-        while(hull.size() >= 2)
+        while(hull.size() >= 1)
         {
             QPoint newVector = val - hull.back();
-            QPoint lastVector = hull.back() - hull[hull.size() - 2];
 
-            cout << VectorMul(newVector, lastVector) << endl;
-            if (VectorMul(newVector, lastVector) >  0)
+            int preLast {0};
+            if (hull.size() > 1)
+            {
+                preLast = hull.size() - 2;
+            }
+            QPoint lastVector = hull.back() - hull[preLast];
+
+            if (VectorMul(newVector, lastVector) < 0)
             {
                 hull.pop_back();
             }
