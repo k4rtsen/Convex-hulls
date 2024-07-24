@@ -22,7 +22,7 @@ void PaintScene::Clear()
 
 void PaintScene::MakeHull()
 {
-    if (m_DotsOnScene.empty() || m_DotsOnScene.size() < 2)
+    if (m_DotsOnScene.size() <= 2)
     {
         return;
     }
@@ -35,6 +35,13 @@ void PaintScene::MakeHull()
 
     // send to main window the area of hull
     emit getSquare(hull.GetSquare());
+}
+
+void PaintScene::AddNewPoint(QPoint point)
+{
+    DrawPointOnScene(point);
+    m_DotsOnScene.append(point);
+    emit signalAddNewPoint(point);
 }
 
 void PaintScene::PaintConvexHull(const QVector<QPoint> &hull)
@@ -54,17 +61,18 @@ void PaintScene::PaintConvexHull(const QVector<QPoint> &hull)
             QPen(Qt::black));
 }
 
-void PaintScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
+void PaintScene::DrawPointOnScene(QPoint point)
 {
     constexpr qreal SIZE {4};
-    QPoint point = event->scenePos().toPoint();
     addEllipse(point.x() - SIZE / 2,
                point.y() - SIZE / 2,
                SIZE,
                SIZE,
                QPen(Qt::black),
                QBrush(Qt::black));
+}
 
-    m_DotsOnScene.append(point);
-    emit signalAddNewPoint(point);
+void PaintScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    AddNewPoint(event->scenePos().toPoint());
 }

@@ -3,6 +3,8 @@
 
 #include <QVector>
 #include <QPoint>
+#include <iostream>
+using namespace std;
 
 class ConvexHull
 {
@@ -14,9 +16,9 @@ private:
     int VectorMul(QPoint a, QPoint b);
     // находит точку ближайшую к (0, 0)
     QPoint FindMinPoint(const QVector<QPoint>&);
-    qreal CalculateArea();
+    qreal CalculateArea(const QVector<QPoint>&);
     QVector<QPoint> Jarvis(const QVector<QPoint>&);
-    // QVector<QPoint> Graham(const QVector<QPoint>&);
+    QVector<QPoint> Graham(QVector<QPoint>);
 
 public:
     ConvexHull(const QVector<QPoint>&);
@@ -31,5 +33,10 @@ public:
         return m_Hull;
     }
 };
+
+//for debug
+ostream &operator<<(ostream &os, const QPoint point);
+template<typename Obj>
+void printVector(const QVector<Obj>&);
 
 #endif // CONVEXHULL_H

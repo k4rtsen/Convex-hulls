@@ -16,6 +16,7 @@ public:
     ~PaintScene();
     void Clear();
     void MakeHull();
+    void AddNewPoint(QPoint);
 
 private:
     QVector<QPoint> m_DotsOnScene;
@@ -23,7 +24,7 @@ private:
 private:
     void mousePressEvent(QGraphicsSceneMouseEvent * event);
     void PaintConvexHull(const QVector<QPoint>&);
-
+    void DrawPointOnScene(QPoint point);
 
 signals:
     void signalAddNewPoint(QPoint point);

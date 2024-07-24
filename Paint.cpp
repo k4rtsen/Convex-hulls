@@ -46,7 +46,13 @@ void Paint::GetNewPoint(QPoint point)
     m_pUI->textEdit->append(str);
 }
 
-void Paint::on_pushButton_clicked()
+void Paint::on_bAsm_clicked()
+{
+    m_pScene->MakeHull();
+    update();
+}
+
+void Paint::on_bClear_clicked()
 {
     m_pScene->Clear();
     m_pUI->l_square->setText("0");
@@ -54,9 +60,14 @@ void Paint::on_pushButton_clicked()
     update();
 }
 
-
-void Paint::on_pushButton_2_clicked()
+void Paint::on_bAddPoint_clicked()
 {
-    m_pScene->MakeHull();
-    update();
+    if (m_pUI->x_coordinate->text().isEmpty() || m_pUI->y_coordinate->text().isEmpty())
+    {
+        return;
+    }
+    int x = m_pUI->x_coordinate->text().toInt();
+    int y = m_pUI->y_coordinate->text().toInt();
+    m_pScene->AddNewPoint(QPoint{x, y});
 }
+

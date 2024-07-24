@@ -36,8 +36,9 @@ public slots:
 
 private slots:
     void SlotTimer();
-    void on_pushButton_clicked();
-    void on_pushButton_2_clicked();
+    void on_bAsm_clicked();
+    void on_bClear_clicked();
+    void on_bAddPoint_clicked();
 };
 
 #endif // PAINT_H
